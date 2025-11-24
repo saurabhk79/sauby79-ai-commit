@@ -3,6 +3,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import * as dotenv from 'dotenv';
+import clipboard from 'clipboardy';
 import { getStagedDiff, hasStagedChanges } from './git.js';
 import { generateCommitMessage } from './ai.js';
 
@@ -41,6 +42,7 @@ async function main() {
     spinner.text = 'Analyzing changes with Gemini AI...';
     
     const message = await generateCommitMessage(apiKey, diff);
+    await clipboard.write(message);
 
     spinner.succeed('Commit message generated!');
 
@@ -50,6 +52,8 @@ async function main() {
 
     console.log(chalk.dim('To use this message:'));
     console.log(chalk.white(`git commit -m "${message.replace(/"/g, '\\"')}"`));
+
+    console.log(chalk.dim('The commit message has also been copied to your clipboard.'));
 
   } catch (error) {
     spinner.fail('An error occurred.');

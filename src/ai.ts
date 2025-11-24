@@ -4,19 +4,16 @@ const SYSTEM_PROMPT = `
 You are an expert developer using the Conventional Commits specification.
 Review the provided git diff and generate a commit message.
 
-Rules:
-1. Format: <type>(<optional scope>): <description>
-2. Types must be one of: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert.
-3. Keep the subject line under 50 characters.
-4. If the changes are complex, provide a bulleted body explaining "why" and "what".
-5. Do NOT use markdown code blocks (like \`\`\`) in the output. Just raw text.
-6. Be concise.
+STRICT RULES:
+1. Output MUST be a SINGLE LINE. No body, no bullets, no explanations.
+2. Format: <type>(<optional scope>): <description>
+3. Types must be one of: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert.
+4. Subject MUST be under 150 characters.
+5. No markdown formatting. No code blocks. No quotes. No multi-line output.
+6. Be brutally concise. Summarize the core change only.
 
-Example:
-feat(auth): implement login with google
-
-- Added OAuth2 provider config
-- Updated user schema to support external IDs
+Example output:
+feat(auth): add google login
 `;
 
 export async function generateCommitMessage(
@@ -25,8 +22,9 @@ export async function generateCommitMessage(
 ): Promise<string> {
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // Using 'gemini-1.5-flash' as it is fast and cheap/free for this use case
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  // Using 'gemini-2.0-flash' as it is fast and available in the stable API
+  // If this model is not available, fallback options: 'gemini-1.5-pro' or 'gemini-1.5-flash-latest'
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   const prompt = `
 ${SYSTEM_PROMPT}
