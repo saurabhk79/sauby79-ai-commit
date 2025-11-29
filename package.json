@@ -1,20 +1,35 @@
 {
-  "name": "ai-commit-cli",
+  "name": "@sauby79/ai-commit",
   "version": "1.0.0",
-  "description": "Generate commit messages using Generative AI",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "start": "ts-node src/index.ts"
+  "description": "Generate one-line high-quality, descriptive Git commit messages using Generative AI.",
+  "keywords": [
+    "ai",
+    "git",
+    "commit",
+    "message",
+    "cli",
+    "generative-ai"
+  ],
+  "author": "Sauby79 <imsauby@gmail.com> (https://saurabhk79.github.io)",
+  "license": "MIT",
+  "homepage": "https://github.com/saurabhk79/commit-masterai#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saurabhk79/commit-masterai.git"
   },
+  "main": "dist/index.js",
+  "type": "module",
   "bin": {
     "ai-commit": "./dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "start": "ts-node src/index.ts"
+  },
   "dependencies": {
     "chalk": "^5.6.2",
     "clipboardy": "^5.0.1",
