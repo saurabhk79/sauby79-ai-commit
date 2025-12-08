@@ -1,5 +1,16 @@
 # Changelog
 
+
+## 2025-12-08
+
+- Refactored `callOpenRouter` function in `src/ai.ts`
+- Updated `generateCommitMessage` and `generateSummary` functions in `src/ai.ts`
+- Added `createChangelogEntryAndMaybePush` function in `src/changelog.ts`
+- Created `commands.ts` for various command functionalities
+- Added `config.ts` for API key and model configuration
+- Initiated `index.ts` and separated functions, plus handled interactive, CLI, and argument modes
+- Introduced `init.ts` for initialization and updating configurations
+- Implemented `utils.ts` for Git repository checks
 ## 2025-11-26
 
 - **package.json**: Added dependencies `inquirer@^9.2.7` and `@types/inquirer@^9.0.9` for interactive prompts.
