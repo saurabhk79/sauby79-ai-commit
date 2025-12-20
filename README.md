@@ -1,9 +1,15 @@
 
-# AI Commit CLI
+# Kompitai (Komp CLI)
 
-A command-line tool to generate conventional commit messages for your staged changes using Google's Gemini AI.
+A command-line tool to generate conventional commit messages for your staged changes using AI.
 
-![Demo](https://raw.githubusercontent.com/saurabh-k15/ai-commit-cli/main/demo.gif)
+## Installation
+
+```bash
+npm install -g kompitai
+```
+
+![Demo](https://raw.githubusercontent.com/saurabhk79/commit-masterai/main/demo.gif)
 
 ## Features
 
@@ -16,14 +22,6 @@ A command-line tool to generate conventional commit messages for your staged cha
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [Git](https://git-scm.com/) initialized in your project.
-
-<!-- ## Installation
-
-You can install the tool globally using npm:
-
-```bash
-npm install -g @saurabh-k/ai-commit-cli
-``` -->
 
 ## Configuration
 
@@ -59,7 +57,7 @@ The tool requires a Google AI API key to function.
 
 2.  Run the tool:
     ```bash
-    ai-commit
+    komp generate commit
     ```
 
 3.  The tool will analyze the diff and generate a commit message.

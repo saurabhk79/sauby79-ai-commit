@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] - 2024-12-20
+
+### Changed
+- Renamed package from `@sauby79/ai-commit` to `kompitai`
+- Updated command from `ai-commit` to `komp`
+- Updated all references in code and documentation
+
 
 ## 2025-12-08
 

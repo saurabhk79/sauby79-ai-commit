@@ -5,88 +5,94 @@ import path from "path";
 import { appendFile, readFile } from "fs/promises";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { log } from "./log.js";
 
 const execAsync = promisify(exec);
 
 export async function runInit() {
-  console.log(chalk.blue.bold("AI Commit Initialization (Global Mode)"));
   console.log(
-    chalk.dim(
-      "This will store your keys permanently in your system environment variables.",
-    ),
+    "\n" +
+      log.title("Komp CLI — Initialization") +
+      "\n" +
+      chalk.dim(
+        "This will store credentials in your system environment variables."
+      ) +
+      "\n"
   );
 
   const answers = await inquirer.prompt([
     {
       name: "apiKey",
       type: "password",
-      message: "Enter your OpenRouter API Key:",
-      validate: (input) => input.length > 0 || "API Key is required.",
+      message: "OpenRouter API key:",
+      validate: (input) =>
+        input.length > 0 || "API key is required. No key, no magic.",
     },
     {
       name: "model",
       type: "input",
-      message: "Enter the Model Name (e.g., openai/gpt-3.5-turbo):",
+      message: "Model name:",
       default: "openai/gpt-3.5-turbo",
     },
   ]);
 
   const platform = os.platform();
+  console.log(log.step(`Detected platform: ${platform}`));
 
   if (platform === "win32") {
     await setWindowsEnv(answers.apiKey, answers.model);
   } else {
     await setUnixEnv(answers.apiKey, answers.model);
   }
+
+  console.log(log.ok("Initialization finished."));
 }
 
 export async function runUpdate() {
   console.log(
-    chalk.yellow(
-      "To update, simply run 'ai-commit init' again to overwrite the values.",
-    ),
+    log.warn("Update just re-runs init and overwrites existing values.")
   );
+
   const { confirm } = await inquirer.prompt({
     name: "confirm",
     type: "confirm",
-    message: "Run init now?",
+    message: "Run initialization now?",
     default: true,
   });
 
-  if (confirm) {
-    await runInit();
+  if (!confirm) {
+    console.log(log.info("Update cancelled."));
+    return;
   }
+
+  await runInit();
 }
 
-// --- Windows ---
 async function setWindowsEnv(apiKey: string, model: string) {
   try {
-    console.log(
-      chalk.dim("Running 'setx' to save variables to Windows Registry..."),
-    );
+    console.log(log.step("Writing environment variables using setx..."));
 
     await execAsync(`setx OPENROUTER_API_KEY "${apiKey}"`);
     await execAsync(`setx OPENROUTER_MODEL "${model}"`);
 
-    console.log(chalk.green("\nSuccess! ✔"));
     console.log(
-      chalk.yellow.bold(
-        "IMPORTANT: You must restart your command prompt/terminal for these changes to take effect.",
-      ),
+      "\n" +
+        log.ok("Environment variables saved.") +
+        "\n" +
+        chalk.yellow.bold("Restart your terminal for changes to take effect.")
     );
   } catch (error) {
-    console.error(chalk.red("Failed to set environment variables on Windows."));
-    console.error((error as Error).message);
+    console.error(log.err("Failed to set environment variables on Windows."));
+    console.error(chalk.red((error as Error).message));
+    process.exit(1);
   }
 }
 
-// --- Mac/Linux Logic ---
 async function setUnixEnv(apiKey: string, model: string) {
   const shell = process.env.SHELL || "/bin/bash";
   const homeDir = os.homedir();
   let rcFile = ".bashrc";
 
-  // Detect shell type
   if (shell.includes("zsh")) {
     rcFile = ".zshrc";
   } else if (shell.includes("bash")) {
@@ -97,8 +103,9 @@ async function setUnixEnv(apiKey: string, model: string) {
   }
 
   const rcPath = path.join(homeDir, rcFile);
+
   const contentToAppend = `
-# Added by ai-commit
+# Added by komp
 export OPENROUTER_API_KEY="${apiKey}"
 export OPENROUTER_MODEL="${model}"
 `;
@@ -106,20 +113,24 @@ export OPENROUTER_MODEL="${model}"
   try {
     try {
       await readFile(rcPath);
+      console.log(log.step(`Updating ${rcPath}...`));
     } catch {
-      console.log(chalk.dim(`Creating ${rcPath}...`));
+      console.log(log.step(`Creating ${rcPath}...`));
     }
 
     await appendFile(rcPath, contentToAppend);
 
-    console.log(chalk.green(`\nSuccess! Appended variables to ${rcPath} ✔`));
     console.log(
-      chalk.yellow.bold(
-        `IMPORTANT: Run 'source ~/${rcFile}' or restart your terminal to apply changes.`,
-      ),
+      "\n" +
+        log.ok(`Variables written to ${rcPath}.`) +
+        "\n" +
+        chalk.yellow.bold(
+          `Run 'source ~/${rcFile}' or restart your terminal to apply changes.`
+        )
     );
   } catch (error) {
-    console.error(chalk.red(`Failed to update ${rcFile}.`));
-    console.error((error as Error).message);
+    console.error(log.err(`Failed to update ${rcFile}.`));
+    console.error(chalk.red((error as Error).message));
+    process.exit(1);
   }
 }

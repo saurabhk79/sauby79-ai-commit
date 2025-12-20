@@ -22,18 +22,21 @@ async function callOpenRouter(
   messages: any[],
   max_tokens = 500
 ) {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: model,
-      messages,
-      max_tokens,
-    }),
-  });
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: model,
+        messages,
+        max_tokens,
+      }),
+    }
+  );
 
   if (!response.ok) {
     const error = await response.text();
@@ -68,7 +71,10 @@ export async function generateSummary(
   try {
     const messages = [
       { role: "system", content: SUMMARY_PROMPT },
-      { role: "user", content: `Here is the git diff to summarize:\n${diff}` },
+      {
+        role: "user",
+        content: `Here is the git diff:\n${diff} \n\n Just drop a no-comment a Pull request description ready to copy paste.`,
+      },
     ];
     return await callOpenRouter(apiKey, model, messages, 800);
   } catch (error) {
